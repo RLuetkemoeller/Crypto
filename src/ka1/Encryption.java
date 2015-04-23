@@ -37,7 +37,7 @@ public class Encryption {
 	}
 	
 	public static String xor(String str1, String str2) throws UnsupportedEncodingException {
-		// Check if str are same length if not exit .
+		// Check if strings are same length if not exit.
 		if (str1.length() != str2.length() || str1.length() == 0)
 			return null;
 		BitSet b1,b2;
