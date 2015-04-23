@@ -1,6 +1,7 @@
 package ka2;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Random;
 
 import ka1.Encryption;
 
@@ -17,18 +18,19 @@ public class Feistel {
 	public static String encrypt(String str, String key) {
 		
 		String left=null, right=null, code=null;
-		int i;
+		String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
+		Random rand = new Random();
+		int rchar;
 		
-		if ((str.length()%2) != 0){
-			i = str.length()/2 + 1;
+		if ((str.length()%key.length()) != 0){
+			rchar = rand.nextInt(128);
+			str += Integer.toString(rchar);
 		}
-		else {
-			i = str.length()/2;
-		}
 		
 		
-		left = str.substring(0, i);
-		right = str.substring(i, str.length());
+		
+		left = str.substring(0, (str.length()/2));
+		right = str.substring((str.length()/2), str.length());
 		
 		System.out.println(right);
 		System.out.println(key);
