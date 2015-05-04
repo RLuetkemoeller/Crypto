@@ -3,6 +3,8 @@ package ka1;
 import java.io.IOException;
 import java.util.BitSet;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 
 
 public class Main {
@@ -24,10 +26,27 @@ public class Main {
 		System.out.println((char)b2[0]);
 		*/
 		Encryption.init();
-		String str = "Hello";
-		String cry = Encryption.xor(str, "12345");
+		
+		/*
+		String test = RandomStringUtils.randomAscii(250);
+		System.out.println("IV:" + Encryption.getIv());
+		String t2;
+		System.out.println(test);
+		t2 = Encryption.xor(test,Encryption.getIv());
+		System.out.println(t2);
+		test = Encryption.xor(t2,Encryption.getIv());
+		System.out.println(test);
+		*/
+		
+		
+		
+		String str = RandomStringUtils.randomAscii(250);
+		System.out.println(str);
+		String cry = Encryption.cbcEncode(str);
 		System.out.println(cry);
-		System.out.println(Encryption.xor(cry, "12345"));
+		System.out.println(Encryption.cbcDecode(cry));
+		
+		
 		
 	}
 	
