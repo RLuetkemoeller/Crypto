@@ -183,4 +183,19 @@ public class Encryption {
 		
 		return 1;
 	}
+	public static String xor2(String str1, String str2){
+		// Check if strings are one char
+		if (str1.length() != 1 || str2.length() != 1){
+			System.out.println("ERROR: XOR not possible due to length problems, NULL returned.");
+			return null;
+		}
+		BitSet b1,b2;
+		// convert chars into BitSet		
+		b1 = BitSet.valueOf(str1.getBytes());
+		b2 = BitSet.valueOf(str2.getBytes());
+		// XOR Bitwise Bitset1 with 2
+		b1.xor(b2);
+		System.out.println(b1.length());
+		return new String(b1.toByteArray());	
+	}	
 }

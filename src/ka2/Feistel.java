@@ -22,30 +22,19 @@ public class Feistel {
 		Random rand = new Random();
 		int rchar;
 		
-		if ((str.length()%key.length()) != 0){
-			rchar = rand.nextInt(128);
-			str += Integer.toString(rchar);
+		while ((str.length()%key.length()) != 0){
+			rchar = rand.nextInt(alphabet.length());
+			str += alphabet.charAt(rchar);
 		}
-		
-		
 		
 		left = str.substring(0, (str.length()/2));
 		right = str.substring((str.length()/2), str.length());
 		
-		System.out.println(right);
-		System.out.println(key);
-
+		System.out.println("Right:" + right);
+		System.out.println("Key:" + key);
 		
-		while ((right.length()%key.length()) != 0){
-			
-		}
-		
-		try {
 			code = Encryption.xor(right, key);
-		} catch (UnsupportedEncodingException e) {
 			System.out.println("ERROR: Unsupported Encoding Exception für UTF-8 -> XOR kann nicht durchgeführt werden.");
-			return null;
-		}
 		
 		
 		
