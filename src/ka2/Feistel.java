@@ -33,7 +33,7 @@ public class Feistel {
 		System.out.println("Right:" + right);
 		System.out.println("Key:" + key);
 		
-			code = Encryption.xor(right, key);
+			code = Encryption.xor2(right, key);
 			System.out.println("ERROR: Unsupported Encoding Exception für UTF-8 -> XOR kann nicht durchgeführt werden.");
 		
 		

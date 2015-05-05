@@ -239,5 +239,5 @@ public class Encryption {
 		b1.xor(b2);
 		System.out.println(b1.length());
 		return new String(b1.toByteArray());	
-	}	
+	}
 }
