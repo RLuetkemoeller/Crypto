@@ -1,6 +1,5 @@
 package ka2;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Random;
 
 import ka1.Encryption;
@@ -17,6 +16,11 @@ public class Feistel {
 	
 	public static String encrypt(String str, String key) {
 		
+		if (str == null || key == null){
+			System.out.println("ERROR: Uebergebener String oder Key nicht vorhanden!");
+			return null;
+		}
+		
 		String left=null, right=null, code=null;
 		String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
 		Random rand = new Random();
@@ -28,7 +32,7 @@ public class Feistel {
 		}
 		
 		left = str.substring(0, (str.length()/2));
-		right = str.substring((str.length()/2), str.length());
+		right = str.substring((str.length()/2)+1, str.length());
 		
 		System.out.println("Right:" + right);
 		System.out.println("Key:" + key);
