@@ -1,5 +1,6 @@
 package ka2;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Random;
 
 import ka1.Encryption;
@@ -8,9 +9,10 @@ public class Feistel {
 
 	public static void main(String[] args) {
 		
-		encrypt("mamsa", "papa");
-		
-		
+		String str=encrypt("mama", "papa");
+		System.out.println(str);
+		str=encrypt(str, "papa");
+		System.out.println(str);
 		
 	}
 	
@@ -21,31 +23,47 @@ public class Feistel {
 			return null;
 		}
 		
-		String left=null, right=null, code=null;
-		String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
+		String left=null, right=null, code=null, code2=null;
+		String alphabet = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ123456789";
 		Random rand = new Random();
 		int rchar;
 		
-		while ((str.length()%key.length()) != 0){
+		while ((str.length()%key.length()) != 0 || str.length() <= key.length()){
 			rchar = rand.nextInt(alphabet.length());
 			str += alphabet.charAt(rchar);
 		}
 		
-		left = str.substring(0, (str.length()/2));
-		right = str.substring((str.length()/2)+1, str.length());
+		left = str.substring(0, str.length()/2);
+		right = str.substring(str.length()/2, str.length());
 		
-		System.out.println("Right:" + right);
-		System.out.println("Key:" + key);
+		for (int round=1; round <= 2; round++){
+			try {
+				code = Encryption.xor(right, key);
+				if (code == null){
+					System.out.println("ERROR: Unequal lenght of strings for XOR function." + round);
+				}
+			} catch (UnsupportedEncodingException e) {
+				System.out.println("ERROR: Unsupported Encoding Exception in the 1st XOR function." + round);
+				return null;
+			}
+			
+			try {
+				code2 = Encryption.xor(left, code);
+				if (code2 == null){
+					System.out.println("ERROR: Unequal lenght of strings for 2nd XOR function." + round);
+				}
+			} catch (UnsupportedEncodingException e) {
+				System.out.println("ERROR: Unsupported Encoding Exception in the 2nd XOR function." + round);
+				return null;
+			}
+			
+			left=right;
+			right=code2;
+			code=key.substring(1) + key.charAt(0);
+			key=code;
+		}
 		
-			code = Encryption.xor2(right, key);
-			System.out.println("ERROR: Unsupported Encoding Exception für UTF-8 -> XOR kann nicht durchgeführt werden.");
-		
-		
-		
-		
-		System.out.println(code);
-		
-		return str;
+		return code2 + left;
 	}
 
 }
