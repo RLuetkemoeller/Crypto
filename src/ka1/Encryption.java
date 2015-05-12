@@ -3,8 +3,6 @@ package ka1;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -16,7 +14,6 @@ public class Encryption {
 	private static String key = "Secrets Ahead";
 	private static String iv = "ABCD1234";
 	private static int blocksize = 16;
-	private static int loopcount = 8;
 	
 	public static void setKey(String _key){Encryption.key = _key;}	
 	public static String getKey() { return Encryption.key;}

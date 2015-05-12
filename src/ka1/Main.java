@@ -1,7 +1,6 @@
 package ka1;
 
 import java.io.IOException;
-import java.util.BitSet;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
