@@ -1,6 +1,7 @@
 package ka3;
 
 import java.math.BigInteger;
+import java.security.SecureRandom;
 
 public class RSA {
 
@@ -16,20 +17,14 @@ public class RSA {
 	}
 	
 	public void createKeys(){
-		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		//! Random function for p, q and e needed !
-		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		
-		BigInteger p = new BigInteger("11"), q = new BigInteger("13"), phi=null;
-		e = new BigInteger("23");
+		BigInteger p = getPrime(), q = getPrime(), phi=null;
+		e = getPrime();
 		
 		N = p.multiply(q);
 		phi = (p.add(new BigInteger("-1"))).multiply((q.add(new BigInteger("-1"))));
 		
 		while (phi.gcd(e) == new BigInteger("1")){
-			//!!!!!!!!!!!!!!!!!!!!!!!!!!
-			//! Random generator for e !
-			//!!!!!!!!!!!!!!!!!!!!!!!!!!
+			e = getPrime();
 		}
 		
 		ExtendedEuklid eukl = new ExtendedEuklid();
@@ -42,5 +37,28 @@ public class RSA {
 		else{
 			d=eukl.v;
 		}
+	}
+	
+	// Checkfunktion, nicht benötigt, da die Probability für probablePrime bei 2^-100 liegt
+	/*
+	private static boolean isPrime(BigInteger n){
+		for(BigInteger i = new BigInteger("2"); i.compareTo(n) < 0; i.add(new BigInteger("1"))){
+			if(n.mod(i) == new BigInteger("0")){
+				return false;
+			}
+			System.out.println("i: " + i + "; mod: " + n.mod(i));
+		}
+		return true;
+	}
+	*/
+	
+	private static BigInteger getPrime(){
+		int maxBitLength = 1024; // Größe der Primzahlen
+		SecureRandom rand = new SecureRandom();
+		int n;
+		for (n = rand.nextInt(maxBitLength); n < 10; n = rand.nextInt(maxBitLength)){
+		}
+		BigInteger prime = BigInteger.probablePrime(n, rand);
+		return prime;
 	}
 }
