@@ -18,24 +18,47 @@ public class RSA {
 	
 	public void createKeys(){
 		BigInteger p = getPrime(), q = getPrime(), phi=null;
-		e = getPrime();
 		
 		N = p.multiply(q);
 		phi = (p.add(new BigInteger("-1"))).multiply((q.add(new BigInteger("-1"))));
+		
+		do{
+			e = getPrime();
+		} while(e.compareTo(new BigInteger("0")) < 0 || e.compareTo(phi) >= 0);
 		
 		while (phi.gcd(e) == new BigInteger("1")){
 			e = getPrime();
 		}
 		
-		ExtendedEuklid eukl = new ExtendedEuklid();
-		eukl.calc(phi, e);
+		System.out.println("phi: " + phi);
+		System.out.println("e: " + e);
 		
-		if (eukl.v.compareTo(new BigInteger("0")) < 0){
-		d=phi.subtract(eukl.v);
+		BigInteger[] erg = new BigInteger[2];
+		erg = ExtEukl(phi, e);
+		
+		if (erg == null){
+			System.out.println("ERROR: Euklid got wrong value. Pop out ...");
+			return;
+		}
+		
+		if (erg[1].multiply(phi).add(erg[0].multiply(e)) == new BigInteger("1")){
+		}
+		else{
+			BigInteger cache;
+			cache = erg[1];
+			erg[1] = erg[0];
+			erg[0] = cache;
+		}
+		
+		System.out.println("d: " + erg[0]);
+		System.out.println("k: " + erg[1]);
+		
+		if (erg[0].compareTo(new BigInteger("0")) < 0){
+		d=phi.subtract(erg[0]);
 		}
 		
 		else{
-			d=eukl.v;
+			d=erg[0];
 		}
 	}
 	
@@ -53,12 +76,36 @@ public class RSA {
 	*/
 	
 	private static BigInteger getPrime(){
-		int maxBitLength = 1024; // Größe der Primzahlen
+		int maxBitLength = 128; // Größe der Primzahlen
 		SecureRandom rand = new SecureRandom();
 		int n;
-		for (n = rand.nextInt(maxBitLength); n < 10; n = rand.nextInt(maxBitLength)){
+		for (n = rand.nextInt(maxBitLength); n < 2; n = rand.nextInt(maxBitLength)){
 		}
 		BigInteger prime = BigInteger.probablePrime(n, rand);
 		return prime;
+	}
+	
+	private static BigInteger[] ExtEukl(BigInteger a, BigInteger b){
+		BigInteger[] arr = new BigInteger[2];
+		BigInteger cache;
+		
+		if (a.compareTo(b) < 0 || a.compareTo(new BigInteger("0")) < 0 || b.compareTo(new BigInteger("0")) < 0){
+			System.out.println("ERROR: Wrong parameter values.");
+			return null;
+		}
+		
+		if(b.compareTo(new BigInteger("0")) <= 0){
+			arr[0] = new BigInteger("1");
+			arr[1] = new BigInteger("0");
+			return arr;
+		}
+		
+		arr = ExtEukl(b, a.mod(b));
+		arr[0] = arr[1].multiply(a.divide(b).negate()).add(arr[0]);
+		cache = arr[1];
+		arr[1] = arr[0];
+		arr[0] = cache;
+		
+		return arr;
 	}
 }
