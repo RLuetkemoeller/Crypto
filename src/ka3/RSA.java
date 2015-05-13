@@ -30,9 +30,6 @@ public class RSA {
 			e = getPrime();
 		}
 		
-		System.out.println("phi: " + phi);
-		System.out.println("e: " + e);
-		
 		BigInteger[] erg = new BigInteger[2];
 		erg = ExtEukl(phi, e);
 		
@@ -49,9 +46,6 @@ public class RSA {
 			erg[1] = erg[0];
 			erg[0] = cache;
 		}
-		
-		System.out.println("d: " + erg[0]);
-		System.out.println("k: " + erg[1]);
 		
 		if (erg[0].compareTo(new BigInteger("0")) < 0){
 		d=phi.subtract(erg[0]);
