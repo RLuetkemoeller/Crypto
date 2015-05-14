@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/Apache"/>
 	<classpathentry kind="lib" path="C:/Users/Elias/workspace/Crypto/lib/commons-lang3-3.4.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Elias/workspace/Crypto/lib/commons-lang3-3.4-javadoc.jar"/>
 	<classpathentry kind="output" path="bin"/>

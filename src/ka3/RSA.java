@@ -9,10 +9,18 @@ public class RSA {
 	public BigInteger N=null, e=null;
 	
 	public static void main(String[] args) {
-	
+		String str = "Solo";
+		
 		RSA keyone = new RSA();
 		keyone.createKeys();
-		System.out.println("PublicKey: " + keyone.e + " " + keyone.N);
+		System.out.println("N: " + keyone.N + "; e: " + keyone.e + "; d: " + keyone.d);
+		
+		
+		System.out.println("Message: " + str);
+		str = keyone.encrypt("Solo");
+		System.out.println("Encrypted: " + str);
+		str = keyone.decrypt(str);
+		System.out.println("Decrypted: " + str);
 		
 	}
 	
@@ -29,6 +37,12 @@ public class RSA {
 		while (phi.gcd(e) == new BigInteger("1")){
 			e = getPrime();
 		}
+		
+		
+		
+		System.out.println("phi: " + phi);
+		
+		
 		
 		BigInteger[] erg = new BigInteger[2];
 		erg = ExtEukl(phi, e);
@@ -48,7 +62,7 @@ public class RSA {
 		}
 		
 		if (erg[0].compareTo(new BigInteger("0")) < 0){
-		d=phi.subtract(erg[0]);
+		d=erg[0].add(phi);
 		}
 		
 		else{
@@ -70,7 +84,7 @@ public class RSA {
 	*/
 	
 	private static BigInteger getPrime(){
-		int maxBitLength = 128; // Größe der Primzahlen
+		int maxBitLength = 10; // Größe der Primzahlen
 		SecureRandom rand = new SecureRandom();
 		int n;
 		for (n = rand.nextInt(maxBitLength); n < 2; n = rand.nextInt(maxBitLength)){
@@ -101,5 +115,19 @@ public class RSA {
 		arr[0] = cache;
 		
 		return arr;
+	}
+	
+	public String encrypt(String str){
+		BigInteger strInt = new BigInteger(str.getBytes()), code;
+		code = strInt.modPow(e, N);
+		str = new String(code.toByteArray());
+		return str;
+	}
+	
+	public String decrypt(String str){
+		BigInteger strInt = new BigInteger(str.getBytes()), message;
+		message = strInt.modPow(d, N);
+		str = new String(message.toByteArray());
+		return str;
 	}
 }
