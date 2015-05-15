@@ -2,6 +2,9 @@ package ka3;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class RSA {
 
@@ -13,12 +16,13 @@ public class RSA {
 	// Funktion zum Bugfixen, sobald Verschlüsselung läuft wird diese gelöscht
 	public void bugfix() {
 		String str = "Solo";
+		byte[] code;
 		
 		this.createKeys();
 		System.out.println("N: " + this.N + "; e: " + this.e + "; d: " + this.d);
 		
 		System.out.println("Message: " + str);
-		str = this.encrypt("Solo");
+		code = this.encrypt("Solo");
 		System.out.println("Encrypted: " + str);
 		str = this.decrypt(str);
 		System.out.println("Decrypted: " + str);
@@ -34,7 +38,7 @@ public class RSA {
 		
 		do{ // e erstellen, falls ein falsches erstellt wird, erneut abfragen (Vorgabe e > 0 und e < phi
 			e = getPrime();
-		} while(e.compareTo(new BigInteger("0")) < 0 || e.compareTo(phi) >= 0);
+		} while(e.compareTo(new BigInteger("1")) <= 0 || e.compareTo(phi) > 0);
 		
 		while (phi.gcd(e) == new BigInteger("1")){ // e auf gcd mit phi prüfen, falls gcd nicht 1, erneut e generieren
 			e = getPrime();
@@ -120,18 +124,20 @@ public class RSA {
 	}
 	
 	// VerschlüsselungsFunktion
-	public String encrypt(String str){
-		BigInteger message = new BigInteger(str.getBytes()), code;
-		code = message.modPow(e, N);
-		str = new String(code.toByteArray());
-		return str;
+	public byte[] encrypt(String str){
+		byte[] message = str.getBytes(), eBytes = e.toByteArray(), NBytes = N.toByteArray();
+		
+		for (int i = 0; i < str.length(); i++){
+			
+		}
+		
+		return code;
 	}
 	
 	// Entschlüsselungsfunktion
-	public String decrypt(String str){
-		BigInteger code = new BigInteger(str.getBytes()), message;
-		message = code.modPow(d, N);
-		str = new String(message.toByteArray());
+	public String decrypt(byte[] code){
+		String str = null;
+		
 		return str;
 	}
 }
