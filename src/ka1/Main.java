@@ -2,10 +2,6 @@ package ka1;
 
 import java.io.IOException;
 
-import org.apache.commons.lang3.RandomStringUtils;
-
-
-
 public class Main {
 
 	public static void main(String[] args) throws IOException {
@@ -38,8 +34,8 @@ public class Main {
 		*/
 		
 		
-		
-		String str = RandomStringUtils.randomAscii(250);
+		// CBC Encryption
+		String str = "Sensible Nachricht.";
 		System.out.println(str);
 		String cry = Encryption.cbcEncode(str);
 		System.out.println(cry);
