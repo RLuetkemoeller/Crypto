@@ -2,17 +2,15 @@ package ka3;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class RSA {
 
 	// Es sollte für jede Verschlüsselung ein Keypaar erstellt werden.
 	// Um dies zu ermöglichen wird pro Keypaar eine RSA Klasse davon instanziert
-	private BigInteger d=null;
-	public BigInteger N=null, e=null;
+	private BigInteger d=null, N=null, e=null;
 	
+	/*
 	// Funktion zum Bugfixen, sobald Verschlüsselung läuft wird diese gelöscht
 	public void bugfix() {
 		String str = "Solo";
@@ -22,11 +20,15 @@ public class RSA {
 		System.out.println("N: " + this.N + "; e: " + this.e + "; d: " + this.d);
 		
 		System.out.println("Message: " + str);
-		code = this.encrypt("Solo");
-		System.out.println("Encrypted: " + str);
-		str = this.decrypt(str);
+		code = this.encrypt(str);
+		str = this.decrypt(code);
 		System.out.println("Decrypted: " + str);
 		
+	}
+	*/
+	
+	public RSA(){
+		this.createKeys();
 	}
 	
 	// Funktion zum Erstellen der Keys innerhalb dieser Instanz
@@ -36,17 +38,17 @@ public class RSA {
 		N = p.multiply(q); // N berechnen
 		phi = (p.add(new BigInteger("-1"))).multiply((q.add(new BigInteger("-1")))); // Phi berechnen
 		
-		do{ // e erstellen, falls ein falsches erstellt wird, erneut abfragen (Vorgabe e > 0 und e < phi
-			e = getPrime();
-		} while(e.compareTo(new BigInteger("1")) <= 0 || e.compareTo(phi) > 0);
+		// ###########################################################
+		//System.out.println("p: " + p + " q: " + q); // Debug Zeile #
+		// ###########################################################
 		
-		while (phi.gcd(e) == new BigInteger("1")){ // e auf gcd mit phi prüfen, falls gcd nicht 1, erneut e generieren
+		do{ // e erstellen, falls ein falsches erstellt wird, erneut abfragen (Vorgabe 1 < e < phi, sowie gcd(e, phi) == 1)
 			e = getPrime();
-		}
+		} while(e.compareTo(new BigInteger("1")) <= 0 || e.compareTo(phi) > 0 || e.gcd(phi).compareTo(new BigInteger("1")) != 0);
 		
-		// ################################################
-		System.out.println("phi: " + phi); // Debug Zeile #
-		// ################################################
+		// ##########################################################################
+		//System.out.println("phi: " + phi + " gcd: " + e.gcd(phi)); // Debug Zeile #
+		// ##########################################################################
 		
 		BigInteger[] erg = new BigInteger[2];
 		erg = ExtEukl(phi, e); // Euklidscher Algorithmus durchlaufen
@@ -89,7 +91,7 @@ public class RSA {
 	
 	// Primzahlgenerator
 	private static BigInteger getPrime(){
-		int maxBitLength = 10; // Größe der Primzahlen
+		int maxBitLength = 1024; // Größe der Primzahlen
 		SecureRandom rand = new SecureRandom();
 		int n;
 		for (n = rand.nextInt(maxBitLength); n < 2; n = rand.nextInt(maxBitLength)){ // n darf nicht kleiner als 2 sein für probablePrime
@@ -125,19 +127,16 @@ public class RSA {
 	
 	// VerschlüsselungsFunktion
 	public byte[] encrypt(String str){
-		byte[] message = str.getBytes(), eBytes = e.toByteArray(), NBytes = N.toByteArray();
-		
-		for (int i = 0; i < str.length(); i++){
-			
-		}
-		
-		return code;
+		BigInteger message = new BigInteger(str.getBytes()), code;
+		code = message.modPow(e, N);
+		return code.toByteArray();
 	}
 	
 	// Entschlüsselungsfunktion
-	public String decrypt(byte[] code){
-		String str = null;
-		
-		return str;
+	public String decrypt(byte[] str){
+		BigInteger code = new BigInteger(str), message;
+		message = code.modPow(d, N);
+		String out = new String(message.toByteArray());
+		return out;
 	}
 }
