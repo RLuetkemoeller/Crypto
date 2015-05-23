@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -18,12 +19,16 @@ public class Encryption {
 	private static String iv = "ABCD1234";
 	private static int blocksize = 16;
 	
+	// Set und Get Functinos ...
 	public static void setKey(String _key){Encryption.key = _key;}	
 	public static String getKey() { return Encryption.key;}
 	public static void setIv(String _iv){Encryption.iv = _iv;}	
 	public static String getIv(){return Encryption.iv;}
 	public static void setBlocksize(int _size) {Encryption.blocksize = _size;}
 	
+	
+	
+	// Alles initialisieren ....
 	public static void init(){
 		iv = RandomStringUtils.randomAscii(blocksize);
 		
@@ -32,18 +37,19 @@ public class Encryption {
 			for (int i = key.length(); i < blocksize;i++){
 				key += key.charAt(i-len);
 			}
-		}	
+		} else {
+			key = key.substring(0,blocksize);
+		}
 	}
-	
+	// Eine Funktion um einen String in gleich lange Stücke zu splitten
 	public static List<String> splitInChunks(String str, int size) {
-	    // Give the list the right capacity to start with. You could use an array
-	    // instead if you wanted.
+		// Länge der liste definieren
 	    List<String> ret = new ArrayList<String>((str.length() + size - 1) / size);
-
+	    // Stücke in die Liste kopieren
 	    for (int start = 0; start < str.length(); start += size) {
-	  
 	        ret.add(str.substring(start, Math.min(str.length(), start + size)));
 	    }
+	    // Den letzen String auffüllen
 	    int idx = ret.size()-1;
 	    String laststr = ret.get(idx);
 	    while (laststr.length() < blocksize) {
@@ -60,7 +66,7 @@ public class Encryption {
 	
 	public static String xor(String str1, String str2) throws UnsupportedEncodingException {
 
-		// Check if str are same length if not exit .
+		// Gucken ob die beiden Strings auch die selbe länge haben.
 		if (str1.length() != str2.length() || str1.length() == 0){
 			System.out.println("String1Length: " + str1.length() + " String2Length: " + str2.length());
 			return null;
@@ -69,18 +75,24 @@ public class Encryption {
 		BitSet b2 = new BitSet(str2.length()*8);
 		byte[] by1, by2;
 		
-		// convert String into BitSet	
+		// Konvertieren für XOR später	
 		
 		by1 = str1.getBytes();
 		by2 = str2.getBytes();
-		b1 = Encryption.bytetobitset(by1);
-		b2 = Encryption.bytetobitset(by2);
-		//System.out.println(b1);
-		//System.out.println(b2);
-		// xor Bitwise Bitset1 with 2
-		b1.xor(b2);		
-		return new String(b1.toByteArray());	
+		
+		b1= BitSet.valueOf(ByteBuffer.wrap(by1));
+		b2= BitSet.valueOf(ByteBuffer.wrap(by2));
+		
+		// XOR
+		b1.xor(b2);	
+		
+		// Falls das letze zeichen 0b00000000 war das nächste bit setzen damit die länge Stimmt...
+		b1.set(blocksize*8);
+		// Aus dem BitSet wieder einen String machen aber das letzte angefügte zeichen entfernen (b1.set(blocksize*8))
+		return (new String(b1.toByteArray())).substring(0,blocksize);	
 	}	
+	
+	// Anfangs selbst geschrieben aber durch valueof nichtmehr benötigt...
 	public static BitSet bytetobitset(byte[] b) {
 
 		int index = 0,
@@ -125,12 +137,16 @@ public class Encryption {
 		
 		return bs;
 	}
+
+	// 
 	public static String cbcEncode(String _input) throws UnsupportedEncodingException {
 		int idx = 0;
 		String _output = "";
+		// String in Stücke zerlegen.
 		List<String> in = splitInChunks(_input, blocksize);
 		List<String> out = new ArrayList<String>(in);
 		
+		// Erste durchlauf mit Initialisierungsvektor anschließend mit dem Vorgänger
 		out.set(idx, Encryption.xor(iv, in.get(idx)));
 		out.set(idx, Encryption.xor(out.get(idx), Encryption.key));
 		
@@ -138,17 +154,22 @@ public class Encryption {
 			out.set(idx, Encryption.xor(out.get(idx-1), in.get(idx)));
 			out.set(idx, Encryption.xor(out.get(idx), Encryption.key));
 		}
+		
+		// String wieder zusammensetzen und zurückgeben
 		for (String s : out){
 			_output += s;
-		}
-		System.out.println(out);		
+		}		
 		return _output;
 	}
 	public static String cbcDecode(String _input) throws UnsupportedEncodingException {
 		int idx = 0;
 		String _output = "";
+		
+		// Selbe logik wie cbcEncode nur ungedreht...
 		List<String> in = splitInChunks(_input, blocksize);
 		List<String> out = new ArrayList<String>(in);
+		
+		
 		
 		out.set(idx, Encryption.xor(in.get(idx), Encryption.key));
 		out.set(idx, Encryption.xor(iv, out.get(idx)));
@@ -161,15 +182,14 @@ public class Encryption {
 		}
 		for (String s : out){
 			_output += s;
-		}
-		System.out.println(out);		
+		}		
 		return _output;
 	}
 	public static int ecbEncode(String _inputfile, String _outputfile) throws IOException{
 		
 		FileInputStream InStream = null;
 		FileOutputStream OutStream = null;
-		
+		// Nicht Weltbewegendes ....
 		try {
 			InStream = new FileInputStream(_inputfile);
 			OutStream = new FileOutputStream(_outputfile);
@@ -199,7 +219,8 @@ public class Encryption {
 		
 		FileInputStream InStream = null;
 		FileOutputStream OutStream = null;
-		
+		// Nicht Weltbewegendes ....
+
 		try {
 			InStream = new FileInputStream(_inputfile);
 			OutStream = new FileOutputStream(_outputfile);
@@ -224,20 +245,5 @@ public class Encryption {
 		}
 		
 		return 1;
-	}
-	public static String xor2(String str1, String str2){
-		// Check if strings are one char
-		if (str1.length() != 1 || str2.length() != 1){
-			System.out.println("ERROR: XOR not possible due to length problems, NULL returned.");
-			return null;
-		}
-		BitSet b1,b2;
-		// convert chars into BitSet		
-		b1 = BitSet.valueOf(str1.getBytes());
-		b2 = BitSet.valueOf(str2.getBytes());
-		// XOR Bitwise Bitset1 with 2
-		b1.xor(b2);
-		System.out.println(b1.length());
-		return new String(b1.toByteArray());	
 	}
 }
