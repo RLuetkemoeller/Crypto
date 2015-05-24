@@ -127,6 +127,10 @@ public class RSA {
 	
 	// VerschlüsselungsFunktion
 	public byte[] encrypt(String str){
+		if (str == null || str == "" || str.length() == 0){
+			System.out.println("ERROR: Verschlüsselungsnachricht ist leer.");
+			return null;
+		}
 		BigInteger message = new BigInteger(str.getBytes()), code;
 		code = message.modPow(e, N);
 		return code.toByteArray();
@@ -134,6 +138,10 @@ public class RSA {
 	
 	// Entschlüsselungsfunktion
 	public String decrypt(byte[] str){
+		if (str == null || str.length == 0){
+			System.out.println("ERROR: Verschlüsselungsnachricht ist leer.");
+			return null;
+		}
 		BigInteger code = new BigInteger(str), message;
 		message = code.modPow(d, N);
 		String out = new String(message.toByteArray());

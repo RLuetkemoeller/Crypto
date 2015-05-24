@@ -3,7 +3,6 @@ package ka2;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import ka1.Encryption;
 
@@ -14,29 +13,25 @@ public class Feistel {
 
 	public static void main(String[] args) throws UnsupportedEncodingException {
 		
-		String str = "Dies ist eine Sehr Wichtige Nachricht. der Sack Reis in China steht noch !!", key="Schluessel";
+		String str = "Heute gehts nach Hause.", key="Secrets";
 		System.out.println("Nachricht: " + str);
 		
 		str=encrypt(str, key);
 		System.out.println("Verschlüsselt: " + str);
 		str=decrypt(str, key);
 		System.out.println("Entschlüsselt: " + str);
-		
-
-		
 	}
 	
 	public static String encrypt(String str, String key) throws UnsupportedEncodingException {
+		
 		// Fehlerkontrolle
-		
-		
-		if (str == null || key == null){
-			System.out.println("ERROR: Uebergebener String oder Key nicht vorhanden!");
+		if (str == null || key == null || key.length() <= 1){
+			System.out.println("ERROR: Nachricht oder Key nicht vorhanden, oder Key zu klein.");
 			return null;
 		}
 		
 		// Ein und Ausgabestringliste
-		List<String> in = Encryption.splitInChunks(str, blocksize);;
+		List<String> in = Encryption.splitInChunks(str, blocksize);
 		List<String> out = new ArrayList<String>();
 		
 		// Key auf passende länge bearbeiten
@@ -45,8 +40,7 @@ public class Feistel {
 		Encryption.init();
 		key = Encryption.getKey();
 		int idx = 0;
-		String left=null, right=null, code="", cache=null, output="";
-		
+		String left=null, right=null, code="", output="";
 		
 		// Schlüssel erstellen
 		keys.clear();
@@ -64,12 +58,12 @@ public class Feistel {
 			for (int round = 1; round <= Maxrounds; round++){
 				key = keys.get(round-1);
 				
-				// xOhrn
+				// XOR Funktion
 				code = Encryption.xor(key, right);
-				code = Encryption.xor(left,code);
+				code = Encryption.xor(left, code);
 				
 				// Vertauschen außer im letzten Schritt
-				if (round < 3){
+				if (round < Maxrounds){
 					left = right;
 					right = code;
 					
@@ -90,10 +84,8 @@ public class Feistel {
 	
 	public static String decrypt(String str, String key) throws UnsupportedEncodingException {
 		// Fehlerkontrolle
-		
-		
-		if (str == null || key == null){
-			System.out.println("ERROR: Uebergebener String oder Key nicht vorhanden!");
+		if (str == null || key == null || key.length() <= 1){
+			System.out.println("ERROR: Nachricht oder Key nicht vorhanden, oder Key zu klein.");
 			return null;
 		}
 		
@@ -107,7 +99,7 @@ public class Feistel {
 		Encryption.init();
 		key = Encryption.getKey();
 		int idx = 0;
-		String left=null, right=null, code="", cache=null, output="";
+		String left=null, right=null, code="", output="";
 		
 		
 		// Schlüssel erstellen
@@ -116,9 +108,6 @@ public class Feistel {
 			keys.add(idx, key);
 			key = key.substring(1) + key.charAt(0);
 		}
-
-
-
 		
 		for (String piece : in) {
 			
@@ -128,7 +117,7 @@ public class Feistel {
 				key = keys.get(Maxrounds-round);
 
 				code = Encryption.xor(key, right);
-				code = Encryption.xor(left,code);
+				code = Encryption.xor(left, code);
 				
 				if (round < 3){
 					left = right;
